@@ -115,8 +115,8 @@ public class Menu extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void IdentificarDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_IdentificarDActionPerformed
-IdentificarD identificarD = new IdentificarD();
-        identificarD.setVisible(true);
+ Identificador identificador = new Identificador();
+        identificador.setVisible(true);
     }//GEN-LAST:event_IdentificarDActionPerformed
 
     private void EditarDeSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditarDeSActionPerformed

@@ -4,9 +4,14 @@
  */
 package sosrs;
 
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JOptionPane;
+import java.util.List;
+import java.util.Arrays;
+import sosrs.DoencaManager;
+
 
 public class CadastrarDeS extends javax.swing.JFrame {
 private Menu menu;
@@ -33,54 +38,21 @@ CadastroBtn.addActionListener(e -> cadastrarDoenca());
  public void actionPerformed(ActionEvent e) {
                 // Quando o botão de cadastro for clicado
 
-                // Extrai os dados dos campos
-                String nome = txtNomeDoenca.getText().trim();
-                String sintomas = txtSintomas.getText().trim();
-                String tratamento = tratamentoTxtField.getText().trim();
-                String informacoes = InfoDoenca.getText().trim();
-                boolean picada = CasoforPicadacheckbox.isSelected();
-
-                // Verifica se o nome da doença foi preenchido
-                if (nome.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Por favor, informe o nome da doença.");
-                    return;
-                }
-
-                // Cria uma nova instância de Doenca
-                Doenca novaDoenca = new Doenca(nome, sintomas, tratamento, informacoes, picada);
-
-                // Aqui você pode adicionar a lógica para salvar a doença em algum lugar,
-                // como um banco de dados ou um arquivo
-
-                // Exemplo de exibição dos dados
-                JOptionPane.showMessageDialog(null, "Doença cadastrada com sucesso:\n" + novaDoenca.toString());
-
-                // Limpa os campos após o cadastro
-                limparCampos();
-            }
-        private void capturarFotoAnimal() {
-        JOptionPane.showMessageDialog(null, "Funcionalidade para capturar foto do animal ainda não implementada.");
-    }
-
-    private void voltarMenu() {
-        this.setVisible(false);
-        menu.setVisible(true);
-    }
-    
- private void cadastrarDoenca() {
-                String nome = txtNomeDoenca.getText().trim();
+        // Extrai os dados dos campos
+        String nome = txtNomeDoenca.getText().trim();
         String sintomas = txtSintomas.getText().trim();
         String tratamento = tratamentoTxtField.getText().trim();
         String informacoes = InfoDoenca.getText().trim();
         boolean picada = CasoforPicadacheckbox.isSelected();
 
+        // Verifica se o nome da doença foi preenchido
         if (nome.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Por favor, informe o nome da doença.");
+            JOptionPane.showMessageDialog(null, "Por favor, informe o nome da doença.");
             return;
         }
 
         // Cria uma nova instância de Doenca
-        Doenca novaDoenca = new Doenca(nome, sintomas, tratamento, informacoes, picada);
+        Doenca novaDoenca = new Doenca(nome, Arrays.asList(sintomas.split(",")), tratamento, informacoes, picada);
 
         // Aqui você pode adicionar a lógica para salvar a doença em algum lugar,
         // como um banco de dados ou um arquivo
@@ -90,7 +62,40 @@ CadastroBtn.addActionListener(e -> cadastrarDoenca());
 
         // Limpa os campos após o cadastro
         limparCampos();
-        }
+    }
+
+        private void capturarFotoAnimal() {
+        JOptionPane.showMessageDialog(null, "Funcionalidade para capturar foto do animal ainda não implementada.");
+    }
+
+    private void voltarMenu() {
+        this.setVisible(false);
+        menu.setVisible(true);
+    }
+    
+private void cadastrarDoenca() {
+         String nome = txtNomeDoenca.getText().trim();
+        String sintomas = txtSintomas.getText().trim();
+        String tratamento = tratamentoTxtField.getText().trim();
+        String informacoes = InfoDoenca.getText().trim();
+        boolean picada = CasoforPicadacheckbox.isSelected();
+
+        if (nome.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor, informe o nome da doença.");
+            return;
+         }
+
+        // Cria uma nova instância de Doenca
+        Doenca novaDoenca = new Doenca(nome, Arrays.asList(sintomas.split(",")), tratamento, informacoes, picada);
+        DoencaManager.getInstance().adicionarDoenca(novaDoenca);
+
+        JOptionPane.showMessageDialog(null, "Doença cadastrada com sucesso:\n" + novaDoenca.toString());
+
+        // Limpa os campos após o cadastro
+        limparCampos();
+}
+
+
  
  
  private void limparCampos() {
@@ -100,29 +105,7 @@ CadastroBtn.addActionListener(e -> cadastrarDoenca());
         InfoDoenca.setText("");
         CasoforPicadacheckbox.setSelected(false);
     }
- public class Doenca {
-
-        private String nome;
-        private String sintomas;
-        private String tratamento;
-        private String informacoes;
-        private boolean picada;
-
-        // Construtor da classe Doenca
-        public Doenca(String nome, String sintomas, String tratamento, String informacoes, boolean picada) {
-            this.nome = nome;
-            this.sintomas = sintomas;
-            this.tratamento = tratamento;
-            this.informacoes = informacoes;
-            this.picada = picada;
-        }
-
-        // Sobrescrita do método toString para exibir informações da doença
-        @Override
-        public String toString() {
-            return "Nome: " + nome + "\nSintomas: " + sintomas + "\nTratamento: " + tratamento + "\nInformações: " + informacoes + "\nÉ caso de picada: " + picada;
-        }
-    }
+ 
 
  
  
