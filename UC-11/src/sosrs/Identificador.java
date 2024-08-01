@@ -11,8 +11,19 @@ import sosrs.Doenca;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.JList;
-public class Identificador extends javax.swing.JFrame {
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.sql.*;
 
+
+public class Identificador extends javax.swing.JFrame {
+ private static final String DB_URL = "jdbc:mysql://localhost:3306/sosrs";
+    private static final String DB_USER = "root"; // Substitua pelo seu usuário do MySQL
+    private static final String DB_PASSWORD = "root"; // Substitua pela sua senha do MySQL
    
     
     /**
@@ -27,48 +38,79 @@ public class Identificador extends javax.swing.JFrame {
     }
      
      private void identificarDoencas() {
-       String sintomas = TxtIdentificar.getText().trim().toLowerCase(); // Converter para minúsculas
+        String sintomas = TxtIdentificar.getText().trim().toLowerCase(); // Converter para minúsculas
 
-    if (sintomas.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Por favor, informe os sintomas.");
-        return;
-    }
+        if (sintomas.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor, informe os sintomas.");
+            return;
+        }
 
-    DefaultListModel<String> model = new DefaultListModel<>();
-    StringBuilder resultados = new StringBuilder(); // Usado para armazenar o texto final
+        DefaultListModel<String> model = new DefaultListModel<>();
+        StringBuilder resultados = new StringBuilder(); // Usado para armazenar o texto final
 
-    // Exibe os sintomas informados para depuração
-    System.out.println("Sintomas informados: " + sintomas);
+        // Exibe os sintomas informados para depuração
+        System.out.println("Sintomas informados: " + sintomas);
 
-    for (Doenca doenca : DoencaManager.getInstance().getDoencas()) {
-        boolean matchFound = false;
-        for (String sintoma : sintomas.split("\\s*,\\s*")) { // Ajustado para lidar com espaços
-            String sintomaLimpo = sintoma.trim().toLowerCase(); // Converter o sintoma para minúsculas
+        try {
+            List<Doenca> doencas = new DoencaDAO().getDoencas();
+            for (Doenca doenca : doencas) {
+                boolean matchFound = false;
+                for (String sintoma : sintomas.split("\\s*,\\s*")) { // Ajustado para lidar com espaços
+                    String sintomaLimpo = sintoma.trim().toLowerCase(); // Converter o sintoma para minúsculas
 
-            // Exibe os sintomas da doença para depuração
-            System.out.println("Sintomas da doença: " + doenca.getSintomas());
+                    // Exibe os sintomas da doença para depuração
+                    System.out.println("Sintomas da doença: " + doenca.getSintomas());
 
-            if (doenca.getSintomas().stream()
-                .map(String::toLowerCase) // Converter sintomas da doença para minúsculas
-                .anyMatch(s -> s.equals(sintomaLimpo))) {
-                matchFound = true;
-                break;
+                    if (doenca.getSintomas().stream()
+                        .map(String::toLowerCase) // Converter sintomas da doença para minúsculas
+                        .anyMatch(s -> s.equals(sintomaLimpo))) {
+                        matchFound = true;
+                        break;
+                    }
+                }
+                if (matchFound) {
+                    model.addElement(doenca.toString());
+                    resultados.append(doenca.toString()).append("\n");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erro ao conectar ao banco de dados.");
+        }
+
+        if (model.isEmpty()) {
+            model.addElement("Nenhuma doença encontrada com esses sintomas.");
+            resultados.append("Nenhuma doença encontrada com esses sintomas.");
+        }
+
+        // Atualiza o JTextArea com os resultados
+        resultadoTextArea.setText(resultados.toString());
+     } 
+     
+     
+private List<Doenca> buscarDoencasDoBanco() throws SQLException {
+         List<Doenca> doencas = new ArrayList<>();
+        String query = "SELECT * FROM doencas";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String nome = resultSet.getString("nome");
+                String sintomas = resultSet.getString("sintomas");
+                String tratamento = resultSet.getString("tratamento");
+                String informacoes = resultSet.getString("informacoes");
+                boolean picada = resultSet.getBoolean("picada");
+
+                Doenca doenca = new Doenca(id, nome, Arrays.asList(sintomas.split(",")), tratamento, informacoes, picada);
+                doencas.add(doenca);
             }
         }
-        if (matchFound) {
-            model.addElement(doenca.toString());
-            resultados.append(doenca.toString()).append("\n");
-        }
-    }
 
-    if (model.isEmpty()) {
-        model.addElement("Nenhuma doença encontrada com esses sintomas.");
-        resultados.append("Nenhuma doença encontrada com esses sintomas.");
+        return doencas;
     }
-
-    // Atualiza o JTextArea com os resultados
-    resultadoTextArea.setText(resultados.toString());
-     } 
 
 
     /**

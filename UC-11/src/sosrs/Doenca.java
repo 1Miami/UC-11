@@ -3,18 +3,38 @@ package sosrs;
 import java.util.List;
 
 public class Doenca {
+    private int id;  // Adicionado campo id
     private String nome;
     private List<String> sintomas;
     private String tratamento;
     private String informacoes;
     private boolean picada;
 
+    // Construtor completo
+    public Doenca(int id, String nome, List<String> sintomas, String tratamento, String informacoes, boolean picada) {
+        this.id = id;
+        this.nome = nome;
+        this.sintomas = sintomas;
+        this.tratamento = tratamento;
+        this.informacoes = informacoes;
+        this.picada = picada;
+    }
+
+    // Construtor sem id
     public Doenca(String nome, List<String> sintomas, String tratamento, String informacoes, boolean picada) {
         this.nome = nome;
         this.sintomas = sintomas;
         this.tratamento = tratamento;
         this.informacoes = informacoes;
         this.picada = picada;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getNome() {
